@@ -12,40 +12,61 @@ class Book {
      * @Id @Column(type="integer") 
      * @GeneratedValue
      */
-    protected $id;
+    public $id;
 
     /**
      * @var string
      * @Column(type="string") 
      */
-    protected $name;
+    public $name;
 
     /**
      * @var string
      * @Column(type="string") 
      */
-    protected $author;
+    public $author;
 
-
+    /**
+     * @return int id
+     */
     public function getId(){
         return $this->id;
     }
 
+    /**
+     * @return string name
+     */
     public function getName(){
         return $this->name;
     }
 
+    /**
+     * @return string author
+     */
     public function getAuthor() {
         return $this->author;
     }    
 
+    /**
+     * @return Book()
+     */
     public function setName($name){
         $this->name = $name;
         return $this;  
     }
 
+     /**
+     * @return Book()
+     */
     public function setAuthor($author) {
         $this->author = $author;
         return $this;
+    }
+
+    /**
+     * @return Book()
+     */
+    public function getValues() {
+        return get_object_vars($this);
     }
 }
