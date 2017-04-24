@@ -1,5 +1,11 @@
 {
-    "require": {
-        "slim/slim": "^3.8"
+  "require": {
+    "slim/slim": "^3.8",
+    "doctrine/orm": "^2.5"
+  },
+  "autoload": {
+    "psr-4": {
+      "App\\": "./src"
     }
+  }
 }
