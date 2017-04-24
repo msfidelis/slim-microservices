@@ -9,6 +9,7 @@ require 'bootstrap.php';
 
 /**
  * Lista de todos os livros
+ * @request curl -X GET http://localhost:8000/book
  */
 $app->get('/book', function (Request $request, Response $response) use ($app) {
 
@@ -23,6 +24,7 @@ $app->get('/book', function (Request $request, Response $response) use ($app) {
 
 /**
  * Retornando mais informações do livro informado pelo id
+ * @request curl -X GET http://localhost:8000/book/1
  */
 $app->get('/book/{id}', function (Request $request, Response $response) use ($app) {
     $route = $request->getAttribute('route');
@@ -107,6 +109,7 @@ $app->put('/book/{id}', function (Request $request, Response $response) use ($ap
 
 /**
  * Deleta o livro informado pelo ID
+ * @request curl -X DELETE http://localhost:8000/book/3
  */
 $app->delete('/book/{id}', function (Request $request, Response $response) use ($app) {
     /**
