@@ -63,3 +63,5 @@ $entityManager = EntityManager::create($conn, $config);
 $container['em'] = $entityManager;
 
 $app = new \Slim\App($container);
+
+include 'routes.php';
