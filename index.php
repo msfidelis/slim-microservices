@@ -38,6 +38,8 @@ $app->get('/book/{id}', function (Request $request, Response $response) use ($ap
      * Verifica se existe um livro com a ID informada
      */
     if (!$book) {
+        $logger = $this->get('logger');
+        $logger->warning("Book {$id} Not Found");
         throw new \Exception("Book not Found", 404);
     }       
 
@@ -71,6 +73,8 @@ $app->post('/book', function (Request $request, Response $response) use ($app) {
     $entityManager->persist($book);
     $entityManager->flush();
 
+    $logger = $this->get('logger');
+    $logger->info('Book Created!', $book->getValues());
 
     $return = $response->withJson($book, 201)
         ->withHeader('Content-type', 'application/json');
@@ -97,9 +101,15 @@ $app->put('/book/{id}', function (Request $request, Response $response) use ($ap
     $book = $booksRepository->find($id);   
 
     /**
+     * Monolog Logger
+     */
+    $logger = $this->get('logger');
+
+    /**
      * Verifica se existe um livro com a ID informada
      */
     if (!$book) {
+        $logger->warning("Book {$id} Not Found - Impossible to Update");        
         throw new \Exception("Book not Found", 404);
     }   
 
@@ -115,7 +125,7 @@ $app->put('/book/{id}', function (Request $request, Response $response) use ($ap
     $entityManager->persist($book);
     $entityManager->flush();        
 
-    
+    $logger->info("Book {$id} updated!", $book->getValues());
     $return = $response->withJson($book, 200)
         ->withHeader('Content-type', 'application/json');
     return $return;
@@ -132,6 +142,12 @@ $app->delete('/book/{id}', function (Request $request, Response $response) use (
     $route = $request->getAttribute('route');
     $id = $route->getArgument('id');
 
+
+    /**
+     * Monolog Logger
+     */
+    $logger = $this->get('logger');
+
     /**
      * Encontra o Livro no Banco
      */ 
@@ -143,6 +159,7 @@ $app->delete('/book/{id}', function (Request $request, Response $response) use (
      * Verifica se existe um livro com a ID informada
      */
     if (!$book) {
+        $logger->info("Book {$id} not Found");
         throw new \Exception("Book not Found", 404);
     }     
 
@@ -151,6 +168,8 @@ $app->delete('/book/{id}', function (Request $request, Response $response) use (
      */
     $entityManager->remove($book);
     $entityManager->flush(); 
+
+    $logger->info("Book {$id} deleted", $book->getValues());
 
     $return = $response->withJson(['msg' => "Deletando o livro {$id}"], 204)
         ->withHeader('Content-type', 'application/json');

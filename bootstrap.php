@@ -5,6 +5,7 @@ require './vendor/autoload.php';
 use Doctrine\ORM\Tools\Setup;
 use Doctrine\ORM\EntityManager;
 use Psr7Middlewares\Middleware\TrailingSlash;
+use Monolog\Logger;
 
 /**
  * Configurações
@@ -12,7 +13,7 @@ use Psr7Middlewares\Middleware\TrailingSlash;
 $configs = [
     'settings' => [
         'displayErrorDetails' => true,
-    ],
+    ]   
 ];
 
 /**
@@ -39,9 +40,9 @@ $container['errorHandler'] = function ($container) {
 /**
  * Converte os Exceptions de Erros 405 - Not Allowed
  */
-$container['notAllowedHandler'] = function ($c) {
-    return function ($request, $response, $methods) use ($c) {
-        return $c['response']
+$container['notAllowedHandler'] = function ($container) {
+    return function ($request, $response, $methods) use ($container) {
+        return $container['response']
             ->withStatus(405)
             ->withHeader('Allow', implode(', ', $methods))
             ->withHeader('Content-Type', 'Application/json')
@@ -62,6 +63,19 @@ $container['notFoundHandler'] = function ($container) {
     };
 };
 
+/**
+ * Serviço de Logging em Arquivo
+ */
+$container['logger'] = function($container) {
+    $logger = new Monolog\Logger('books-microservice');
+    $logfile = __DIR__ . '/log/books-microservice.log';
+    $stream = new Monolog\Handler\StreamHandler($logfile, Monolog\Logger::DEBUG);
+    $fingersCrossed = new Monolog\Handler\FingersCrossedHandler(
+        $stream, Monolog\Logger::INFO);
+    $logger->pushHandler($fingersCrossed);
+    
+    return $logger;
+};
 
 $isDevMode = true;
 

@@ -1,0 +1,8 @@
+[2017-04-28 05:58:05] books-microservice.INFO: Book Created! {"id":6,"name":"Mitologia Nordica","author":"Neil Gaiman"} []
+[2017-04-28 05:59:13] books-microservice.INFO: Book Created! {"id":7,"name":"Mitologia Nordica","author":"Neil Gaiman"} []
+[2017-04-28 06:05:55] books-microservice.INFO: Book 2 updated! {"id":2,"name":"Sandman Vol02","author":"Neil Gaiman"} []
+[2017-04-28 06:06:10] books-microservice.WARNING: Book 12 Not Found [] []
+[2017-04-28 06:07:55] books-microservice.INFO: Book 1 not Found [] []
+[2017-04-28 06:07:58] books-microservice.INFO: Book 2 not Found [] []
+[2017-04-28 06:08:00] books-microservice.INFO: Book 3 deleted {"id":null,"name":"Mitologia Nordica","author":"Neil Gaiman"} []
+[2017-04-28 06:08:03] books-microservice.INFO: Book 6 deleted {"id":null,"name":"Mitologia Nordica","author":"Neil Gaiman"} []
