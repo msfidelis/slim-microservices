@@ -4,6 +4,7 @@ require './vendor/autoload.php';
 
 use Doctrine\ORM\Tools\Setup;
 use Doctrine\ORM\EntityManager;
+use Psr7Middlewares\Middleware\TrailingSlash;
 
 /**
  * Configurações
@@ -24,14 +25,40 @@ $container = new \Slim\Container($configs);
 
 
 /**
- * Converte os Exceptions entro da Aplicação em respostas JSON
+ * Converte os Exceptions Genéricas dentro da Aplicação em respostas JSON
  */
-$container['errorHandler'] = function ($c) {
-    return function ($request, $response, $exception) use ($c) {
+$container['errorHandler'] = function ($container) {
+    return function ($request, $response, $exception) use ($container) {
         $statusCode = $exception->getCode() ? $exception->getCode() : 500;
-        return $c['response']->withStatus($statusCode)
+        return $container['response']->withStatus($statusCode)
             ->withHeader('Content-Type', 'Application/json')
             ->withJson(["message" => $exception->getMessage()], $statusCode);
+    };
+};
+
+/**
+ * Converte os Exceptions de Erros 405 - Not Allowed
+ */
+$container['notAllowedHandler'] = function ($c) {
+    return function ($request, $response, $methods) use ($c) {
+        return $c['response']
+            ->withStatus(405)
+            ->withHeader('Allow', implode(', ', $methods))
+            ->withHeader('Content-Type', 'Application/json')
+            ->withHeader("Access-Control-Allow-Methods", implode(",", $methods))
+            ->withJson(["message" => "Method not Allowed; Method must be one of: " . implode(', ', $methods)], 405);
+    };
+};
+
+/**
+ * Converte os Exceptions de Erros 404 - Not Found
+ */
+$container['notFoundHandler'] = function ($container) {
+    return function ($request, $response) use ($container) {
+        return $container['response']
+            ->withStatus(404)
+            ->withHeader('Content-Type', 'Application/json')
+            ->withJson(['message' => 'Page not found']);
     };
 };
 
@@ -62,4 +89,17 @@ $entityManager = EntityManager::create($conn, $config);
  */
 $container['em'] = $entityManager;
 
+
+/**
+ * Application Instance
+ */
 $app = new \Slim\App($container);
+
+/**
+ * @Middleware Tratamento da / do Request 
+ * true - Adiciona a / no final da URL
+ * false - Remove a / no final da URL
+ */
+$app->add(new TrailingSlash(false));
+
+
