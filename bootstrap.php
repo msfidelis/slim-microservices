@@ -6,6 +6,7 @@ use Doctrine\ORM\Tools\Setup;
 use Doctrine\ORM\EntityManager;
 use Psr7Middlewares\Middleware\TrailingSlash;
 use Monolog\Logger;
+use Firebase\JWT\JWT;
 
 /**
  * Configurações
@@ -103,6 +104,10 @@ $entityManager = EntityManager::create($conn, $config);
  */
 $container['em'] = $entityManager;
 
+/**
+ * Token do nosso JWT
+ */
+$container['secretkey'] = "secretloko";
 
 /**
  * Application Instance
@@ -115,5 +120,48 @@ $app = new \Slim\App($container);
  * false - Remove a / no final da URL
  */
 $app->add(new TrailingSlash(false));
+
+/**
+ * Auth básica HTTP
+ */
+$app->add(new \Slim\Middleware\HttpBasicAuthentication([
+    /**
+     * Usuários existentes
+     */
+    "users" => [
+        "root" => "toor"
+    ],
+    /**
+     * Blacklist - Deixa todas liberadas e só protege as dentro do array
+     */
+    "path" => ["/auth"],
+
+    /**
+     * Whitelist - Protege todas as rotas e só libera as de dentro do array
+     */
+    //"passthrough" => ["/auth/liberada", "/admin/ping"],
+]));
+
+
+/**
+ * Auth básica do JWT
+ * Whitelist - Bloqueia tudo, e só libera os
+ * itens dentro do "passthrough"
+ */
+$app->add(new \Slim\Middleware\JwtAuthentication([
+    "regexp" => "/(.*)/",
+    "header" => "X-Token",
+    "path" => "/",
+    "passthrough" => ["/auth", "/admin/ping"],
+    "realm" => "Protected",
+    "secret" => $container['secretkey']
+]));
+
+/**
+ * Proxys confiáveis
+ */
+$trustedProxies = ['0.0.0.0', '127.0.0.1'];
+$app->add(new RKA\Middleware\SchemeAndHost($trustedProxies));
+
 
 

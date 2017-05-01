@@ -5,7 +5,28 @@ use \Psr\Http\Message\ResponseInterface as Response;
 
 use App\Models\Entity\Book;
 
+use Firebase\JWT\JWT;
+
 require 'bootstrap.php';
+
+/**
+ * HTTP Auth - Autenticação minimalista para retornar um JWT
+ */
+$app->get('/auth', function (Request $request, Response $response) use ($app) {
+
+    $key = $this->get("secretkey");
+
+    $token = array(
+        "user" => "@fidelissauro",
+        "twitter" => "https://twitter.com/fidelissauro",
+        "github" => "https://github.com/msfidelis"
+    );
+
+    $jwt = JWT::encode($token, $key);
+
+    return $response->withJson(["auth-jwt" => $jwt], 200)
+        ->withHeader('Content-type', 'application/json');   
+});
 
 /**
  * Lista de todos os livros
