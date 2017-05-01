@@ -152,7 +152,7 @@ $app->add(new \Slim\Middleware\JwtAuthentication([
     "regexp" => "/(.*)/",
     "header" => "X-Token",
     "path" => "/",
-    "passthrough" => ["/auth", "/admin/ping"],
+    "passthrough" => ["/auth", "/v1/auth"],
     "realm" => "Protected",
     "secret" => $container['secretkey']
 ]));
@@ -162,6 +162,4 @@ $app->add(new \Slim\Middleware\JwtAuthentication([
  */
 $trustedProxies = ['0.0.0.0', '127.0.0.1'];
 $app->add(new RKA\Middleware\SchemeAndHost($trustedProxies));
-
-
 
